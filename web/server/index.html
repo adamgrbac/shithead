@@ -34,6 +34,11 @@
 			border: 1px solid red;
 			position: relative;
 		}
+		#button_div {
+			position: absolute;
+			top: 160px;
+			left: 1px;
+		}
 		#card-space {
 			width: 498px;
 			height: 100%;
@@ -43,6 +48,16 @@
 			width: 698px;
 			height: 100%;
 			border: 1px solid yellow;
+		}
+		#fu_space {
+			position: absolute;
+			top: 30px;
+			left: 1px;
+		}
+		#hand_space {
+			position: absolute;
+			top: 90px;
+			left: 1px;
 		}
 		h1 {
 			font-family: Arial;
@@ -66,9 +81,9 @@
 	</div>
 	<div class="bottom">
 		<div id="card-space">
-			<div id="fd_space" class="row"></div><br>
-			<div id="fu_space" class="row"></div><br><br>
-			<div id="hand_space" class="row"></div><br>
+			<div id="fd_space" class="row"></div>
+			<div id="fu_space" class="row"></div>
+			<div id="hand_space" class="row"></div>
 			<div id="button_div">
 				<button type="button" onclick="takeTurn()" id="play_button">Play Cards</button>
 			</div>

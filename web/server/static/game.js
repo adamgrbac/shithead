@@ -64,6 +64,7 @@ socket.on('state',function(game) {
 			}
 			context.fillRect(buttonX,buttonY,buttonW,buttonH)
 			context.stroke()
+			context.font = '20px Arial';
 			context.strokeText("Click to start game!",310,305)
 			canvas.addEventListener('click', function(event) {
 			// Control that click event occurred within position of button
@@ -85,7 +86,7 @@ socket.on('state',function(game) {
 		// Check if it's your turn
 		if(game.game_over){ 
 			context.font = '20px Arial';
-			context.strokeText("Game over! Winner is "+game.players[game.winner].name,310,210)
+			context.strokeText("Game over! Winner is "+game.players[game.winner].name,310,150)
 			var [active,place] = get_active_hand(game.players[player_id]);
 			var valid_numbers = get_valid_numbers(game);
 			displayCards(game,active,place,valid_numbers);
@@ -127,6 +128,10 @@ socket.on('state',function(game) {
 	}
 	
 });
+
+function getImage(number,suit) {
+	return "/static/images/"+number+suit+".png"
+}
 
 function submitPlay() {
 	if(move_ready){
@@ -176,7 +181,8 @@ function displayCards(game,active,place,valid_numbers) {
 	ii = 0;
 	for(const card of game.players[player_id].face_down){
 		var div = document.createElement('div');
-		div.innerText = '[XX]';
+		//div.innerText = '[XX]';
+		div.innerHTML = '<img src="/static/images/red_back.png" height=53 width=35>'
 		div.setAttribute('id','fd_'+ii);
 		div.setAttribute('place','fd');
 		div.setAttribute('index',ii);
@@ -193,7 +199,8 @@ function displayCards(game,active,place,valid_numbers) {
 	// Display fu
 	for(const card of game.players[player_id].face_up){
 		var div = document.createElement('div')
-		div.innerText = '['+card.number+card.suit+']'
+		//div.innerText = '['+card.number+card.suit+']'
+		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=53 width=35>'
 		div.setAttribute('id','fu_'+ii);
 		div.setAttribute('place','fu');
 		div.setAttribute('index',ii);
@@ -210,7 +217,8 @@ function displayCards(game,active,place,valid_numbers) {
 	// Display hand
 	for(const card of game.players[player_id].hand){
 		var div = document.createElement('div')
-		div.innerText = '['+card.number+card.suit+']'
+		//div.innerText = '['+card.number+card.suit+']'
+		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=53 width=35>'
 		div.setAttribute('id','hand_'+ii);
 		div.setAttribute('place','hand');
 		div.setAttribute('index',ii);
@@ -230,9 +238,11 @@ function displayCards(game,active,place,valid_numbers) {
 		var div = document.createElement('div')
 		console.log(place);
 		if(place == 'fd') {
-			div.innerText = '[XX]';
+			//div.innerText = '[XX]';
+			div.innerHTML = '<img src="/static/images/red_back.png" height=53 width=35>';
 		} else {
-			div.innerText = '['+active[parseInt(idx)].number+active[parseInt(idx)].suit+']';
+			//div.innerText = '['+active[parseInt(idx)].number+active[parseInt(idx)].suit+']';
+			div.innerHTML = '<img src="'+getImage(active[parseInt(idx)].number,active[parseInt(idx)].suit)+'"height=53 width=35>';
 		}
 		div.setAttribute('id','select_'+ii);
 		div.setAttribute('place','select');
@@ -251,37 +261,65 @@ function displayCards(game,active,place,valid_numbers) {
 			if(game.discard_pile[game.discard_pile.length -2].number == 3 && game.discard_pile.length > 2){
 				if(game.discard_pile[game.discard_pile.length -3].number == 3 && game.discard_pile.length > 3){
 					// Visualise top 4 cards
-					var discard_text = '['
+					//var discard_text = '['
+					//for(const card of game.discard_pile.slice(-4,game.discard_pile.length)){
+					//	discard_text += '['+card.number+card.suit
+					//}
+					//discard_text += ']'
+					//context.strokeText(discard_text,400,250)
+					var discard_offset = 0;
 					for(const card of game.discard_pile.slice(-4,game.discard_pile.length)){
-						discard_text += '['+card.number+card.suit
+						var img = new Image(35,53);
+						img.src = getImage(card.number,card.suit);
+						context.drawImage(img,365+discard_offset,197,70,106);
+						discard_offset += 20;
 					}
-					discard_text += ']'
-					context.strokeText(discard_text,400,250)
+					
 				} else {
 					// Visualise top three cards
-					var discard_text = '['
+					//var discard_text = '['
+					//for(const card of game.discard_pile.slice(-3,game.discard_pile.length)){
+					//	discard_text += '['+card.number+card.suit
+					//}
+					//discard_text += ']'
+					//context.strokeText(discard_text,400,250)
+					var discard_offset = 0;
 					for(const card of game.discard_pile.slice(-3,game.discard_pile.length)){
-						discard_text += '['+card.number+card.suit
+						var img = new Image(35,53);
+						img.src = getImage(card.number,card.suit);
+						context.drawImage(img,365+discard_offset,197,70,106);
+						discard_offset += 20;
 					}
-					discard_text += ']'
-					context.strokeText(discard_text,400,250)
 				}
 			} else {
 				// Visualise top two cards
-				var discard_text = '['
-					for(const card of game.discard_pile.slice(-2,game.discard_pile.length)){
-						discard_text += '['+card.number+card.suit
-					}
-					discard_text += ']'
-				context.strokeText(discard_text,400,250)
+				//var discard_text = '['
+				//	for(const card of game.discard_pile.slice(-2,game.discard_pile.length)){
+				//		discard_text += '['+card.number+card.suit
+				//	}
+				//	discard_text += ']'
+				//context.strokeText(discard_text,400,250)
+				var discard_offset = 0;
+				for(const card of game.discard_pile.slice(-2,game.discard_pile.length)){
+					var img = new Image(35,53);
+					img.src = getImage(card.number,card.suit);
+					context.drawImage(img,365+discard_offset,197,70,106);
+					discard_offset += 20;
+				}
 			}
 		} else {
 			// Visualise Top Card
-			context.strokeText('['+game.discard_pile[game.discard_pile.length-1].number+game.discard_pile[game.discard_pile.length-1].suit+']',400,250)
+			//context.strokeText('['+game.discard_pile[game.discard_pile.length-1].number+game.discard_pile[game.discard_pile.length-1].suit+']',400,250)
+			var img = new Image(35,53)
+			img.src = getImage(game.discard_pile[game.discard_pile.length-1].number,game.discard_pile[game.discard_pile.length-1].suit)
+			context.drawImage(img,365,197,70,106)
 		}
 	} else {
 		// Visualise Empty Discard
-		context.strokeText("[  ]",400,250)
+		//context.strokeText("[  ]",400,250)
+		var img = new Image(35,53)
+		img.src = '/static/images/red_back.png'
+		context.drawImage(img,365,197,70,106)
 	}
 }
 
