@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">	
+	<title>Shithead</title>
+	<link rel="icon" href="/static/images/poop.ico" />
+    <style>
+		canvas {
+			width: 100%;
+			height: 100%;
+		}
+		div {
+			float: left;
+		}
+		div.valid {
+			color: green;
+		}
+		div.main {
+			width: 800px;
+			height: 500px;
+			border: 1px solid black;
+		}
+		div.side {
+			width: 400px;
+			height: 500px;
+			border: 1px solid blue;
+			overflow-y: auto;
+		}
+		div.bottom {
+			clear: left;
+			width: 1200px;
+			height: 200px;
+			border: 1px solid red;
+			position: relative;
+		}
+		#card-space {
+			width: 498px;
+			height: 100%;
+			border: 1px solid green;
+		}
+		#selected-space {
+			width: 698px;
+			height: 100%;
+			border: 1px solid yellow;
+		}
+		h1 {
+			font-family: Arial;
+			text-align: center;
+		}
+		p {
+			font-family: Arial;
+			padding-left: 10px;
+			font-size: 10px;
+		}
+		
+    </style>
+  </head>
+  <script src="/socket.io/socket.io.js"></script>
+  <body>
+    <div class="main">
+		<canvas id="canvas"></canvas>
+	</div>
+	<div class="side" id="sidebar">
+		<h1 id="game-log">Game Log</h1>
+	</div>
+	<div class="bottom">
+		<div id="card-space">
+			<div id="fd_space" class="row"></div><br>
+			<div id="fu_space" class="row"></div><br><br>
+			<div id="hand_space" class="row"></div><br>
+			<div id="button_div">
+				<button type="button" onclick="takeTurn()" id="play_button">Play Cards</button>
+			</div>
+		</div>
+		<div id='selected-space'></div>
+	</div>
+  </body>
+  <script src="/static/game.js"></script>
+</html>
