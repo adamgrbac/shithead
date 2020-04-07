@@ -16,20 +16,24 @@
 		div.valid {
 			color: green;
 		}
+		div.top {
+			width: 1000px;
+			height: 500px;
+		}
 		div.main {
 			width: 800px;
 			height: 500px;
 			border: 1px solid black;
 		}
 		div.side {
-			width: 400px;
+			width: 196px;
 			height: 500px;
 			border: 1px solid blue;
 			overflow-y: auto;
 		}
 		div.bottom {
 			clear: left;
-			width: 1200px;
+			width: 1000px;
 			height: 200px;
 			border: 1px solid red;
 			position: relative;
@@ -40,12 +44,12 @@
 			left: 1px;
 		}
 		#card-space {
-			width: 498px;
+			width: 48%;
 			height: 100%;
 			border: 1px solid green;
 		}
 		#selected-space {
-			width: 698px;
+			width: 48%;
 			height: 100%;
 			border: 1px solid yellow;
 		}
@@ -73,11 +77,13 @@
   </head>
   <script src="/socket.io/socket.io.js"></script>
   <body>
-    <div class="main">
-		<canvas id="canvas"></canvas>
-	</div>
-	<div class="side" id="sidebar">
-		<h1 id="game-log">Game Log</h1>
+	<div class="top">
+		<div class="main">
+			<canvas id="canvas"></canvas>
+		</div>
+		<div class="side" id="sidebar">
+			<h1 id="game-log">Game Log</h1>
+		</div>
 	</div>
 	<div class="bottom">
 		<div id="card-space">
