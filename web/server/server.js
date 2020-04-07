@@ -196,4 +196,4 @@ setInterval(function() {
 	}
   io.sockets.emit('state', game);
   
-}, 500);
+}, 1000);
