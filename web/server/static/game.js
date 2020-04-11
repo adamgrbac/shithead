@@ -23,6 +23,28 @@ var move_ready = false;
 var game_state = {};
 var selection = [];
 
+var player_positions = 
+	{"0":[210,10],
+	"1":[410,10],
+	"2":[610,10],
+	"3":[610,250],
+	"4":[610,600],
+	"5":[410,600],
+	"6":[210,600],
+	"7":[10,600]}
+
+function get_card(player,index,place) {
+		if(place == "hand"){
+			return player.hand[index];
+		} else if(place == 'fu') {
+			return player.face_up[index];
+		} else if(place == 'fd') {
+			return player.face_down[index];
+		} else {
+			throw "Unknown card destination... hacks?";
+		}
+}
+
 socket.on('id', function(player) {
 	player_id = player;
 	console.log("Ok we know our id is: "+player_id)
@@ -57,11 +79,7 @@ socket.on('state',function(game) {
 	if (!game.start){
 		// Draw Start button if ready
 		if(game_ready){
-			if(button_enabled){
-				context.fillStyle = 'blue';
-			} else {
-				context.fillStyle = 'gray';
-			}
+			context.fillStyle = 'blue';
 			context.fillRect(buttonX,buttonY,buttonW,buttonH)
 			context.stroke()
 			context.font = '20px Arial';
@@ -77,8 +95,8 @@ socket.on('state',function(game) {
 				button_enabled
 			  ) {
 				// Executes if button was clicked!
-				socket.emit('start');
 				button_enabled = false;
+				socket.emit('init');
 			  }
 			})
 		}
@@ -106,23 +124,38 @@ socket.on('state',function(game) {
 				button_enabled
 			  ) {
 				// Executes if button was clicked!
-				socket.emit('start');
+				socket.emit('init');
 				button_enabled = false;
 			  }
 			})
 		} else {
+			document.getElementById("ready_button").style.display = 'none';
+			document.getElementById("swap_button").style.display = 'none';
+			document.getElementById("play_button").style.display = 'block';
+			button_enabled = true;
 			var [active,place] = get_active_hand(game.players[player_id]);
 			var valid_numbers = get_valid_numbers(game);
 			displayCards(game,active,place,valid_numbers);
 			if(game.current_turn == player_id) {
-				document.getElementById("play_button").disabled = false;
+				document.getElementById("play_button").style.display = 'block';
+				//document.getElementById("play_button").disabled = false;
 				valid_move = validMove(game);
 				if(!valid_move && place != 'fd'){
 					socket.emit('pickup')
 					socket.emit('play');
 				} 
+			} else if(game.current_turn == "") {
+				if(game.players[player_id].face_up.length == 3 && !game.players[player_id].ready){
+					document.getElementById("ready_button").style.display = 'block';
+				}
+				if(!game.players[player_id].ready) {
+					document.getElementById("swap_button").style.display = 'block';
+				}
+				document.getElementById("play_button").style.display = 'none';
+				//document.getElementById("ready_button").disabled = false;				
 			} else {
-				document.getElementById("play_button").disabled = true;
+				document.getElementById("play_button").style.display = 'none';
+				//document.getElementById("play_button").disabled = true;
 			}
 		}
 	}
@@ -139,6 +172,10 @@ function submitPlay() {
 	}
 }
 
+function reboot() {
+	socket.emit('reboot');
+}
+
 function get_active_hand(player) {
 	if(player.hand.length == 0) {
 		if(player.face_up.length ==0) {
@@ -151,16 +188,23 @@ function get_active_hand(player) {
 	}
 }
 
+function swapCards(){
+	socket.emit('swapout',selection);
+	selection = [];
+}
+
+function playerReady(){
+	socket.emit('ready');
+}
+
 function toggleSelection(){
-	var idx = this.getAttribute('index')
-	if(selection.includes(idx)){
-		selection.splice(selection.findIndex(function(x){return x==idx}),1);
-		//selected_space.removeChild(this);
+	var idx = {"place":this.getAttribute('place'), "index":this.getAttribute('index')};
+	if(selection.some(function(x){return x.index==idx.index && x.place == idx.place;})){
+		selection.splice(selection.findIndex(function(x){return x.index==idx.index && x.place == idx.place}),1);
 	} else {
 		selection.push(idx);
-		//selected_space.appendChild(this);
 	}
-	selection.sort(function(a,b){return parseInt(a) - parseInt(b)});
+	selection.sort(function(a,b){return a.index - b.index})
 }
 
 function displayCards(game,active,place,valid_numbers) {
@@ -181,7 +225,6 @@ function displayCards(game,active,place,valid_numbers) {
 	ii = 0;
 	for(const card of game.players[player_id].face_down){
 		var div = document.createElement('div');
-		//div.innerText = '[XX]';
 		div.innerHTML = '<img src="/static/images/red_back.png" height=53 width=35>'
 		div.setAttribute('id','fd_'+ii);
 		div.setAttribute('place','fd');
@@ -199,14 +242,13 @@ function displayCards(game,active,place,valid_numbers) {
 	// Display fu
 	for(const card of game.players[player_id].face_up){
 		var div = document.createElement('div')
-		//div.innerText = '['+card.number+card.suit+']'
 		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=53 width=35>'
 		div.setAttribute('id','fu_'+ii);
 		div.setAttribute('place','fu');
 		div.setAttribute('index',ii);
 		div.setAttribute('number',card.number);
 		div.setAttribute('suit',card.suit);
-		if(place == 'fu' && valid_numbers.includes(card.number)) {
+		if((place == 'fu' && valid_numbers.includes(card.number)) || game.current_turn == "") {
 			div.addEventListener('click',toggleSelection);
 			div.setAttribute('class','valid');
 		}
@@ -217,7 +259,6 @@ function displayCards(game,active,place,valid_numbers) {
 	// Display hand
 	for(const card of game.players[player_id].hand){
 		var div = document.createElement('div')
-		//div.innerText = '['+card.number+card.suit+']'
 		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=53 width=35>'
 		div.setAttribute('id','hand_'+ii);
 		div.setAttribute('place','hand');
@@ -235,23 +276,45 @@ function displayCards(game,active,place,valid_numbers) {
 	ii=0;
 	// Display selection
 	for(const idx of selection){
+		var sel_card = get_card(game.players[player_id],idx.index,idx.place);
 		var div = document.createElement('div')
-		console.log(place);
 		if(place == 'fd') {
-			//div.innerText = '[XX]';
 			div.innerHTML = '<img src="/static/images/red_back.png" height=53 width=35>';
 		} else {
-			//div.innerText = '['+active[parseInt(idx)].number+active[parseInt(idx)].suit+']';
-			div.innerHTML = '<img src="'+getImage(active[parseInt(idx)].number,active[parseInt(idx)].suit)+'"height=53 width=35>';
+			div.innerHTML = '<img src="'+getImage(sel_card.number,sel_card.suit)+'"height=53 width=35>';
 		}
 		div.setAttribute('id','select_'+ii);
-		div.setAttribute('place','select');
-		div.setAttribute('index',idx);
-		div.setAttribute('number',active[parseInt(idx)].number);
-		div.setAttribute('suit',active[parseInt(idx)].suit);
+		div.setAttribute('place',idx.place);
+		div.setAttribute('index',idx.index);
+		div.setAttribute('number',sel_card.number);
+		div.setAttribute('suit',sel_card.suit);
 		div.addEventListener('click',toggleSelection);
 		selected_space.appendChild(div);
 		ii += 1;
+	}
+	
+	// Display other players 
+	ii=0;
+	for(const id of Object.keys(game.players)){
+		// Display selection
+		if(id != player_id) {
+			context.fillText(game.players[id].name,player_positions[ii][0],player_positions[ii][1]+60)
+			for(let jj = 0; jj < 3; jj++){
+				if(game.players[id].face_up.length < jj+1) {
+					if(game.players[id].face_down.length >= jj+1) {
+						var img = new Image(35,53);
+						img.src = '/static/images/red_back.png';
+						context.drawImage(img,player_positions[ii][0]+jj*35,player_positions[ii][1],35,53);	
+					}
+				} else {
+					var img = new Image(35,53);
+					img.src = getImage(game.players[id].face_up[jj].number,game.players[id].face_up[jj].suit);
+					context.drawImage(img,player_positions[ii][0]+jj*35,player_positions[ii][1],35,53);
+				}
+			}
+			ii += 1;
+		}
+
 	}
 		
 	context.font = '20px Arial';
@@ -261,12 +324,6 @@ function displayCards(game,active,place,valid_numbers) {
 			if(game.discard_pile[game.discard_pile.length -2].number == 3 && game.discard_pile.length > 2){
 				if(game.discard_pile[game.discard_pile.length -3].number == 3 && game.discard_pile.length > 3){
 					// Visualise top 4 cards
-					//var discard_text = '['
-					//for(const card of game.discard_pile.slice(-4,game.discard_pile.length)){
-					//	discard_text += '['+card.number+card.suit
-					//}
-					//discard_text += ']'
-					//context.strokeText(discard_text,400,250)
 					var discard_offset = 0;
 					for(const card of game.discard_pile.slice(-4,game.discard_pile.length)){
 						var img = new Image(35,53);
@@ -277,12 +334,6 @@ function displayCards(game,active,place,valid_numbers) {
 					
 				} else {
 					// Visualise top three cards
-					//var discard_text = '['
-					//for(const card of game.discard_pile.slice(-3,game.discard_pile.length)){
-					//	discard_text += '['+card.number+card.suit
-					//}
-					//discard_text += ']'
-					//context.strokeText(discard_text,400,250)
 					var discard_offset = 0;
 					for(const card of game.discard_pile.slice(-3,game.discard_pile.length)){
 						var img = new Image(35,53);
@@ -293,12 +344,6 @@ function displayCards(game,active,place,valid_numbers) {
 				}
 			} else {
 				// Visualise top two cards
-				//var discard_text = '['
-				//	for(const card of game.discard_pile.slice(-2,game.discard_pile.length)){
-				//		discard_text += '['+card.number+card.suit
-				//	}
-				//	discard_text += ']'
-				//context.strokeText(discard_text,400,250)
 				var discard_offset = 0;
 				for(const card of game.discard_pile.slice(-2,game.discard_pile.length)){
 					var img = new Image(35,53);
@@ -309,14 +354,12 @@ function displayCards(game,active,place,valid_numbers) {
 			}
 		} else {
 			// Visualise Top Card
-			//context.strokeText('['+game.discard_pile[game.discard_pile.length-1].number+game.discard_pile[game.discard_pile.length-1].suit+']',400,250)
 			var img = new Image(35,53)
 			img.src = getImage(game.discard_pile[game.discard_pile.length-1].number,game.discard_pile[game.discard_pile.length-1].suit)
 			context.drawImage(img,365,197,70,106)
 		}
 	} else {
 		// Visualise Empty Discard
-		//context.strokeText("[  ]",400,250)
 		var img = new Image(35,53)
 		img.src = '/static/images/red_back.png'
 		context.drawImage(img,365,197,70,106)
@@ -371,7 +414,7 @@ function takeTurn() {
 	var valid_numbers = get_valid_numbers(game_state);
 	selected_cards  = [];
 	for(const select of selection){
-		selected_cards.push(active[select]);
+		selected_cards.push(get_card(game_state.players[player_id],select.index,select.place));
 	}
 	all_same = selected_cards.every(function(x){return x.number == selected_cards[0].number})
 	if(all_same && valid_numbers.includes(selected_cards[0].number)){
@@ -401,3 +444,5 @@ while(username == null || username == '') {
 }
 console.log(username)
 socket.emit('new_player',username);
+document.getElementById("ready_button").style.display = 'none';
+document.getElementById("play_button").style.display = 'none';

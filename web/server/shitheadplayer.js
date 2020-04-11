@@ -3,6 +3,7 @@ function ShitheadPlayer(name) {
 	this.hand = [];
 	this.face_up = [];
 	this.face_down = [];
+	this.ready = false;
 			
 	this.add_card = function(card,place) {
 		if(place == "hand"){
@@ -23,6 +24,18 @@ function ShitheadPlayer(name) {
 			return this.face_up.splice(index,1);
 		} else if(place == 'fd') {
 			return this.face_down.splice(index,1);
+		} else {
+			throw "Unknown card destination... hacks?";
+		}
+	}
+	
+	this.get_card = function(index,place) {
+		if(place == "hand"){
+			return this.hand[index];
+		} else if(place == 'fu') {
+			return this.face_up[index];
+		} else if(place == 'fd') {
+			return this.face_down[index];
 		} else {
 			throw "Unknown card destination... hacks?";
 		}
