@@ -13,6 +13,10 @@ app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });// Starts the server.
 
+app.get('/console', function(request, response) {
+  response.sendFile(path.join(__dirname, 'console.html'));
+});// Route to Console
+
 server.listen(5000, function() {
   console.log('Starting server on port 5000');
 });
@@ -47,8 +51,25 @@ io.on('connection', function(socket) {
 	socket.on('disconnect',function() {
 		delete(game.players[socket.id])
 	})
+	socket.on('reboot',function() {
+		io.sockets.emit('message',"Restarting game...")
+		game.game_ready=false;
+		game.start=false;
+		game.game_over=false;
+		game.winner= "";
+		game.current_turn= "";
+		game.discard_pile=[];
+		direction = 0;
+		player_ind = 0;
+		for(const id of Object.keys(game.players)) {
+			game.players[id].hand = [];
+			game.players[id].face_up = [];
+			game.players[id].face_down = [];
+			game.players[id].ready=false;
+		}
+	})
 	// Handle game start - Init Game
-	socket.on('start',function(){
+	socket.on('init',function(){
 		game.start = true;
 		game.game_over = false;
 		game.winner = "";
@@ -78,15 +99,11 @@ io.on('connection', function(socket) {
 				}
 			}
 		}
-
-		game.current_turn = Object.keys(game.players)[player_ind]
-		io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!")
-		for(const id of Object.keys(game.players)) {
-			game.players[id].hand.sort(sortFunction.sortFunction);
-		}
 		
-		// Commence!
+		io.sockets.emit('message',"Swap any face up cards with anything in your hand.")
+		io.sockets.emit('message',"Click ready when done.")
 	})
+
 	socket.on('play',function(data){
 		game.players[socket.id].hand.sort(sortFunction.sortFunction);
 		player_ind += direction;
@@ -101,11 +118,11 @@ io.on('connection', function(socket) {
 		// Remove cards from hand
 		for(i = 0; i < idx.selection.length ; i++) {
 			if(idx.place == "fd") {
-				game.discard_pile.push(game.players[socket.id].face_down.splice(idx.selection[i]-offset,1)[0]);
+				game.discard_pile.push(game.players[socket.id].face_down.splice(idx.selection[i].index-offset,1)[0]);
 			} else if (idx.place == "fu") {
-				game.discard_pile.push(game.players[socket.id].face_up.splice(idx.selection[i]-offset,1)[0]);
+				game.discard_pile.push(game.players[socket.id].face_up.splice(idx.selection[i].index-offset,1)[0]);
 			} else if (idx.place == "hand") {
-				game.discard_pile.push(game.players[socket.id].hand.splice(idx.selection[i]-offset,1)[0]);
+				game.discard_pile.push(game.players[socket.id].hand.splice(idx.selection[i].index-offset,1)[0]);
 			} else {
 				throw "Probs shouldn't be here..."
 			}
@@ -184,6 +201,47 @@ io.on('connection', function(socket) {
 		}
 		game.discard_pile = [];
 		game.players[socket.id].hand.sort(sortFunction.sortFunction);
+	})
+	socket.on('swapout',function(selection){
+		faceups = [];
+		hands = [];
+		
+		// Pop cards
+		var ii = 0;
+		var jj = 0;
+		for(selected of selection){
+			if(selected.place == 'hand'){
+				hands.push(game.players[socket.id].pop_card(selected.index-ii, selected.place)[0]);
+				ii += 1;
+			} else {
+				faceups.push(game.players[socket.id].pop_card(selected.index-jj, selected.place)[0]);
+				jj += 1;
+			}
+		}
+		
+		// Push Faceups
+		for(hand_card of hands){
+			game.players[socket.id].add_card(hand_card,'fu');
+		}
+			
+		// Push Hands
+		for(fu_card of faceups){
+			game.players[socket.id].add_card(fu_card,'hand');
+		}
+		
+	})
+	socket.on('ready',function(){
+		game.players[socket.id].ready = true;
+		io.sockets.emit('message',game.players[socket.id].name+" is ready!");
+		if(Object.keys(game.players).every(function(x){return game.players[x].ready})){
+			// Commence!
+			io.sockets.emit('message',"Everyone is ready! Starting the game!")
+			game.current_turn = Object.keys(game.players)[player_ind]
+			io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!")
+			for(const id of Object.keys(game.players)) {
+				game.players[id].hand.sort(sortFunction.sortFunction);
+			}
+		}
 	})
 });
 
