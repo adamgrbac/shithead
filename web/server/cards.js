@@ -53,9 +53,11 @@ function Deck (num_decks) {
 	this.suits = ["H","C","D","S"]
 	this.cards = []
 	
-	for(var i = 0; i < this.numbers.length; i++){
-		for(var j = 0; j < this.suits.length; j++){
-			this.cards.push(new Card(this.numbers[i],this.suits[j]))
+	for(var k = 0; k < num_decks; k++){
+		for(var i = 0; i < this.numbers.length; i++){
+			for(var j = 0; j < this.suits.length; j++){
+				this.cards.push(new Card(this.numbers[i],this.suits[j]))
+			}
 		}
 	}
 	

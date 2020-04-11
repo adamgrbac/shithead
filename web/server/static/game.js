@@ -2,7 +2,7 @@ var socket = io();
 var canvas = document.getElementById('canvas');
 
 canvas.width = 800;
-canvas.height = 500;
+canvas.height = 400;
 var context = canvas.getContext('2d');
 var fd_space = document.getElementById('fd_space')
 var fu_space = document.getElementById('fu_space')
@@ -11,7 +11,7 @@ var sidebar = document.getElementById('sidebar');
 var game_log = document.getElementById('game-log')
 var selected_space = document.getElementById('selected-space');
 var buttonX = 300;
-var buttonY = 280;
+var buttonY = 300;
 var buttonW = 200;
 var buttonH = 40;
 var button_enabled = true;
@@ -27,11 +27,11 @@ var player_positions =
 	{"0":[210,10],
 	"1":[410,10],
 	"2":[610,10],
-	"3":[610,250],
-	"4":[610,600],
-	"5":[410,600],
-	"6":[210,600],
-	"7":[10,600]}
+	"3":[610,150],
+	"4":[610,300],
+	"5":[410,300],
+	"6":[210,300],
+	"7":[10,300]}
 
 function get_card(player,index,place) {
 		if(place == "hand"){
@@ -60,7 +60,7 @@ socket.on('state',function(game) {
 	players = game.players;
 	game_ready = game.game_ready;
 	
-	context.clearRect(0,0,800,500);
+	context.clearRect(0,0,800,400);
 	
 	// Draw Players Box
 	context.rect(10,10,100,200);
@@ -83,7 +83,7 @@ socket.on('state',function(game) {
 			context.fillRect(buttonX,buttonY,buttonW,buttonH)
 			context.stroke()
 			context.font = '20px Arial';
-			context.strokeText("Click to start game!",310,305)
+			context.strokeText("Click to start game!",310,325)
 			canvas.addEventListener('click', function(event) {
 			// Control that click event occurred within position of button
 			// NOTE: This assumes canvas is positioned at top left corner 
@@ -104,7 +104,7 @@ socket.on('state',function(game) {
 		// Check if it's your turn
 		if(game.game_over){ 
 			context.font = '20px Arial';
-			context.strokeText("Game over! Winner is "+game.players[game.winner].name,310,150)
+			context.strokeText("Game over! Winner is "+game.players[game.winner].name,310,100)
 			var [active,place] = get_active_hand(game.players[player_id]);
 			var valid_numbers = get_valid_numbers(game);
 			displayCards(game,active,place,valid_numbers);
@@ -112,7 +112,7 @@ socket.on('state',function(game) {
 			context.fillStyle = 'blue';
 			context.fillRect(buttonX,buttonY,buttonW,buttonH)
 			context.stroke()
-			context.strokeText("Click to start game!",310,305)
+			context.strokeText("Click to start game!",310,325)
 			canvas.addEventListener('click', function(event) {
 			// Control that click event occurred within position of button
 			// NOTE: This assumes canvas is positioned at top left corner 
@@ -231,7 +231,7 @@ function displayCards(game,active,place,valid_numbers) {
 	ii = 0;
 	for(const card of game.players[player_id].face_down){
 		var div = document.createElement('div');
-		div.innerHTML = '<img src="/static/images/red_back.png" height=53 width=35>'
+		div.innerHTML = '<img src="/static/images/red_back.png" height=80 width=53>'
 		div.setAttribute('id','fd_'+ii);
 		div.setAttribute('place','fd');
 		div.setAttribute('index',ii);
@@ -248,7 +248,7 @@ function displayCards(game,active,place,valid_numbers) {
 	// Display fu
 	for(const card of game.players[player_id].face_up){
 		var div = document.createElement('div')
-		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=53 width=35>'
+		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=80 width=53>'
 		div.setAttribute('id','fu_'+ii);
 		div.setAttribute('place','fu');
 		div.setAttribute('index',ii);
@@ -265,7 +265,7 @@ function displayCards(game,active,place,valid_numbers) {
 	// Display hand
 	for(const card of game.players[player_id].hand){
 		var div = document.createElement('div')
-		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=53 width=35>'
+		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=80 width=53>'
 		div.setAttribute('id','hand_'+ii);
 		div.setAttribute('place','hand');
 		div.setAttribute('index',ii);
@@ -285,9 +285,9 @@ function displayCards(game,active,place,valid_numbers) {
 		var sel_card = get_card(game.players[player_id],idx.index,idx.place);
 		var div = document.createElement('div')
 		if(place == 'fd') {
-			div.innerHTML = '<img src="/static/images/red_back.png" height=53 width=35>';
+			div.innerHTML = '<img src="/static/images/red_back.png" height=80 width=53>';
 		} else {
-			div.innerHTML = '<img src="'+getImage(sel_card.number,sel_card.suit)+'"height=53 width=35>';
+			div.innerHTML = '<img src="'+getImage(sel_card.number,sel_card.suit)+'"height=80 width=53>';
 		}
 		div.setAttribute('id','select_'+ii);
 		div.setAttribute('place',idx.place);
@@ -304,18 +304,18 @@ function displayCards(game,active,place,valid_numbers) {
 	for(const id of Object.keys(game.players)){
 		// Display selection
 		if(id != player_id) {
-			context.fillText(game.players[id].name,player_positions[ii][0],player_positions[ii][1]+60)
+			context.fillText(game.players[id].name,player_positions[ii][0],player_positions[ii][1]+90)
 			for(let jj = 0; jj < 3; jj++){
 				if(game.players[id].face_up.length < jj+1) {
 					if(game.players[id].face_down.length >= jj+1) {
-						var img = new Image(35,53);
+						var img = new Image(53,80);
 						img.src = '/static/images/red_back.png';
-						context.drawImage(img,player_positions[ii][0]+jj*35,player_positions[ii][1],35,53);	
+						context.drawImage(img,player_positions[ii][0]+jj*53,player_positions[ii][1],53,80);	
 					}
 				} else {
-					var img = new Image(35,53);
+					var img = new Image(53,80);
 					img.src = getImage(game.players[id].face_up[jj].number,game.players[id].face_up[jj].suit);
-					context.drawImage(img,player_positions[ii][0]+jj*35,player_positions[ii][1],35,53);
+					context.drawImage(img,player_positions[ii][0]+jj*53,player_positions[ii][1],53,80);
 				}
 			}
 			ii += 1;
@@ -334,7 +334,7 @@ function displayCards(game,active,place,valid_numbers) {
 					for(const card of game.discard_pile.slice(-4,game.discard_pile.length)){
 						var img = new Image(35,53);
 						img.src = getImage(card.number,card.suit);
-						context.drawImage(img,365+discard_offset,197,70,106);
+						context.drawImage(img,365+discard_offset,147,70,106);
 						discard_offset += 20;
 					}
 					
@@ -344,7 +344,7 @@ function displayCards(game,active,place,valid_numbers) {
 					for(const card of game.discard_pile.slice(-3,game.discard_pile.length)){
 						var img = new Image(35,53);
 						img.src = getImage(card.number,card.suit);
-						context.drawImage(img,365+discard_offset,197,70,106);
+						context.drawImage(img,365+discard_offset,147,70,106);
 						discard_offset += 20;
 					}
 				}
@@ -354,7 +354,7 @@ function displayCards(game,active,place,valid_numbers) {
 				for(const card of game.discard_pile.slice(-2,game.discard_pile.length)){
 					var img = new Image(35,53);
 					img.src = getImage(card.number,card.suit);
-					context.drawImage(img,365+discard_offset,197,70,106);
+					context.drawImage(img,365+discard_offset,147,70,106);
 					discard_offset += 20;
 				}
 			}
@@ -362,13 +362,13 @@ function displayCards(game,active,place,valid_numbers) {
 			// Visualise Top Card
 			var img = new Image(35,53)
 			img.src = getImage(game.discard_pile[game.discard_pile.length-1].number,game.discard_pile[game.discard_pile.length-1].suit)
-			context.drawImage(img,365,197,70,106)
+			context.drawImage(img,365,147,70,106)
 		}
 	} else {
 		// Visualise Empty Discard
 		var img = new Image(35,53)
 		img.src = '/static/images/red_back.png'
-		context.drawImage(img,365,197,70,106)
+		context.drawImage(img,365,147,70,106)
 	}
 }
 
