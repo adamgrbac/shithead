@@ -9,7 +9,7 @@ function sortFunction(a,b){
 		case "K":
 			var num_a = 13;
 			break;
-		case "A":
+		case "ACE":
 			var num_a = 14
 			break;
 		default:
@@ -25,7 +25,7 @@ function sortFunction(a,b){
 		case "K":
 			var num_b = 13;
 			break;
-		case "A":
+		case "ACE":
 			var num_b = 14;
 			break;
 		default:
