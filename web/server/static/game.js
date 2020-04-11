@@ -214,6 +214,7 @@ function toggleSelection(){
 }
 
 function displayCards(game,active,place,valid_numbers) {
+	context.font = '10px Arial';
 	while (fd_space.lastElementChild) {
 		fd_space.removeChild(fd_space.lastElementChild);
 	}
