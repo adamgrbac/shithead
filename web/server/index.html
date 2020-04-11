@@ -49,9 +49,14 @@
 			border: 1px solid green;
 		}
 		#selected-space {
-			width: 48%;
+			width: 26%;
 			height: 100%;
 			border: 1px solid yellow;
+		}
+		#chat-text {
+			width: 24%;
+			height: 100%;
+			border: 1px solid green;
 		}
 		#fu_space {
 			position: absolute;
@@ -97,6 +102,10 @@
 			</div>
 		</div>
 		<div id='selected-space'></div>
+		<div id='chat-text'>
+			<textarea id="chat-body" name="chat-body" rows=9 cols=30></textarea>
+			<button type="button" onclick="submitChat()" id="send_chat">Send</button>
+		</div>
 	</div>
   </body>
   <script src="/static/game.js"></script>

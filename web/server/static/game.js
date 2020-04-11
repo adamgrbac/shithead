@@ -197,6 +197,12 @@ function playerReady(){
 	socket.emit('ready');
 }
 
+function submitChat(){
+	var chat_text = document.getElementById('chat-body');
+	socket.emit('chat',chat_text.value);
+	chat_text.value = "";
+}
+
 function toggleSelection(){
 	var idx = {"place":this.getAttribute('place'), "index":this.getAttribute('index')};
 	if(selection.some(function(x){return x.index==idx.index && x.place == idx.place;})){
@@ -370,16 +376,16 @@ function get_valid_numbers(game){
 	
 	// Construct valid numbers
     if(game.discard_pile.length == 0){
-        var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+        var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
 	} else if(game.discard_pile[game.discard_pile.length-1].number == 3) {
         if(game.discard_pile.length == 1){
-            var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+            var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
         } else if(game.discard_pile[game.discard_pile.length-2].number == 3){
             if(game.discard_pile.length == 2){
-                var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+                var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
             } else if(game.discard_pile[game.discard_pile.length-3].number ==3){
                 if(game.discard_pile.length == 3){
-                    var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+                    var valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
                 } else {
                     var valid_numbers = game.discard_pile[game.discard_pile.length-4].valid_numbers
 				}

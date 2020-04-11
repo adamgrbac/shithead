@@ -6,37 +6,37 @@ class Card {
 		// Add valid moves
 		switch(this.number) {
 			case "2":
-				this.valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
 				break;
 			case "4":
-				this.valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
 				break;
 			case "5":
-				this.valid_numbers = ["2","3","5","6","7","8","9","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","5","6","7","8","9","10","J","Q","K","ACE"];
 				break;
 			case "6":
-				this.valid_numbers = ["2","3","6","7","8","9","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","6","7","8","9","10","J","Q","K","ACE"];
 				break;
 			case "7":
 				this.valid_numbers = ["2","3","4","5","6","7"];
 				break;
 			case "8":
-				this.valid_numbers = ["2","3","7","8","9","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","7","8","9","10","J","Q","K","ACE"];
 				break;
 			case "9":
-				this.valid_numbers = ["2","3","7","9","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","7","9","10","J","Q","K","ACE"];
 				break;
 			case "J":
-				this.valid_numbers = ["2","3","10","J","Q","K","A"];
+				this.valid_numbers = ["2","3","10","J","Q","K","ACE"];
 				break;
 			case "Q":
-				this.valid_numbers = ["2","3","10","Q","K","A"];
+				this.valid_numbers = ["2","3","10","Q","K","ACE"];
 				break;
 			case "K":
-				this.valid_numbers = ["2","3","10","K","A"];
+				this.valid_numbers = ["2","3","10","K","ACE"];
 				break;
-			case "A":
-				this.valid_numbers = ["2","3","10","A"];
+			case "ACE":
+				this.valid_numbers = ["2","3","10","ACE"];
 				break;
 			default:
 				this.valid_numbers = []
@@ -49,7 +49,7 @@ class Card {
 }
 
 function Deck (num_decks) {
-	this.numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+	this.numbers = ["2","3","4","5","6","7","8","9","10","J","Q","K","ACE"];
 	this.suits = ["H","C","D","S"]
 	this.cards = []
 	

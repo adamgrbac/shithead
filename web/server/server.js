@@ -243,6 +243,9 @@ io.on('connection', function(socket) {
 			}
 		}
 	})
+	socket.on('chat',function(chat_text){
+		io.sockets.emit('message',game.players[socket.id].name+": "+chat_text)
+	});
 });
 
 // Emit Game State
