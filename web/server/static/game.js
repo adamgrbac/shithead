@@ -34,15 +34,15 @@ var player_positions =
 	"7":[10,300]}
 
 function get_card(player,index,place) {
-		if(place == "hand"){
-			return player.hand[index];
-		} else if(place == 'fu') {
-			return player.face_up[index];
-		} else if(place == 'fd') {
-			return player.face_down[index];
-		} else {
-			throw "Unknown card destination... hacks?";
-		}
+	if(place == "hand"){
+		return player.hand[index];
+	} else if(place == 'fu') {
+		return player.face_up[index];
+	} else if(place == 'fd') {
+		return player.face_down[index];
+	} else {
+		throw "Unknown card destination... hacks?";
+	}
 }
 
 socket.on('id', function(player) {
@@ -128,7 +128,7 @@ socket.on('state',function(game) {
 				button_enabled = false;
 			  }
 			})
-		} else {
+		} else if(Object.keys(game.players).includes(player_id)) {
 			document.getElementById("ready_button").style.display = 'none';
 			document.getElementById("swap_button").style.display = 'none';
 			document.getElementById("play_button").style.display = 'block';
@@ -157,6 +157,15 @@ socket.on('state',function(game) {
 				document.getElementById("play_button").style.display = 'none';
 				//document.getElementById("play_button").disabled = true;
 			}
+		} else {
+			// Waiting;
+			document.getElementById("ready_button").style.display = 'none';
+			document.getElementById("swap_button").style.display = 'none';
+			document.getElementById("play_button").style.display = 'none';
+			document.getElementById("send_chat").style.display = 'none';
+			
+			context.font = '20px Arial';
+			context.strokeText("Game in progress! Please wait...",310,325)
 		}
 	}
 	
@@ -449,7 +458,6 @@ var username = null;
 while(username == null || username == '') {
 	var username = prompt("What is your name?")
 }
-console.log(username)
 socket.emit('new_player',username);
 document.getElementById("ready_button").style.display = 'none';
 document.getElementById("play_button").style.display = 'none';
