@@ -37,22 +37,38 @@ game = {
 var player_ind = 0;
 var direction = 1;
 var playing_deck = {};
+var waiting_queue = {};
 		
 // Handle Connections
 io.on('connection', function(socket) {
 	
 	// Handle new players
 	socket.on('new_player',function(username) {
-		game.players[socket.id] = new shp.ShitheadPlayer(username);
-		socket.emit('message','Welcome ' + username+'!');
-		socket.emit('id',socket.id)
+		if(game.start){
+			waiting_queue[socket.id] = username;
+			socket.emit('message','Welcome ' + username+ '!');
+			socket.emit('message','A game is already in progress, please wait until game restarts or come back later!');
+			socket.emit('id',socket.id)
+		} else {
+			game.players[socket.id] = new shp.ShitheadPlayer(username);
+			socket.emit('message','Welcome ' + username+'!');
+			socket.emit('id',socket.id)
+		}
 	})
 	// Handle disconnect
 	socket.on('disconnect',function() {
-		delete(game.players[socket.id])
+		if(Object.keys(game.players).includes(socket.id)){
+			delete(game.players[socket.id])
+		} else {
+			delete(waiting_queue[socket.id])
+		}
 	})
 	socket.on('reboot',function() {
 		io.sockets.emit('message',"Restarting game...")
+		for(waiting_player of Object.keys(waiting_queue)){
+			game.players[waiting_player] = new shp.ShitheadPlayer(waiting_queue[waiting_player]);
+		}
+		waiting_player = {};
 		game.game_ready=false;
 		game.start=false;
 		game.game_over=false;
@@ -70,6 +86,10 @@ io.on('connection', function(socket) {
 	})
 	// Handle game start - Init Game
 	socket.on('init',function(){
+		for(waiting_player of Object.keys(waiting_queue)){
+			game.players[waiting_player] = new shp.ShitheadPlayer(waiting_queue[waiting_player]);
+		}
+		waiting_player = {};
 		game.start = true;
 		game.game_over = false;
 		game.winner = "";
@@ -81,6 +101,7 @@ io.on('connection', function(socket) {
 			game.players[id].hand = [];
 			game.players[id].face_up = [];
 			game.players[id].face_down = [];
+			game.players[id].ready=false;
 		}
 		
 		// Calc number of decks required

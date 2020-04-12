@@ -4,6 +4,7 @@ function ShitheadPlayer(name) {
 	this.face_up = [];
 	this.face_down = [];
 	this.ready = false;
+	this.waiting = false;
 			
 	this.add_card = function(card,place) {
 		if(place == "hand"){
