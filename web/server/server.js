@@ -17,6 +17,10 @@ app.get('/console', function(request, response) {
   response.sendFile(path.join(__dirname, 'console.html'));
 });// Route to Console
 
+app.get('/rules', function(request, response) {
+  response.sendFile(path.join(__dirname, 'rules.html'));
+});// Route to Console
+
 server.listen(5000, function() {
   console.log('Starting server on port 5000');
 });
