@@ -109,7 +109,7 @@ io.on('connection', function(socket) {
 		}
 		
 		// Calc number of decks required
-		var num_decks = 1 + Math.floor(Object.keys(game.players).length/3);
+		var num_decks = 1 + Math.floor(Object.keys(game.players).length/5);
 		
 		// Construct deck and shuffle
 		playing_deck = new cards.Deck(num_decks);
