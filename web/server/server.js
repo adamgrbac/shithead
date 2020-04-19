@@ -88,6 +88,15 @@ io.on('connection', function(socket) {
 			game.players[id].ready=false;
 		}
 	})
+	
+	socket.on('removePlayer',function(removed){
+		for(const id of Object.keys(game.players)){
+			if(game.players[id].name == removed){
+				io.sockets.connected[id].disconnect();
+			}
+		}
+		console.log(io.sockets);
+	})
 	// Handle game start - Init Game
 	socket.on('init',function(){
 		for(waiting_player of Object.keys(waiting_queue)){

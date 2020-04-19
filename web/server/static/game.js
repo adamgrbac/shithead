@@ -212,6 +212,12 @@ function submitChat(){
 	chat_text.value = "";
 }
 
+function removePlayer() {
+	var remove_player = document.getElementById('remove-player-text');
+	socket.emit('removePlayer',remove_player.value);
+	remove_player.value = "";
+}
+
 function toggleSelection(){
 	var idx = {"place":this.getAttribute('place'), "index":this.getAttribute('index')};
 	if(selection.some(function(x){return x.index==idx.index && x.place == idx.place;})){
