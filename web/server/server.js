@@ -97,6 +97,7 @@ io.on('connection', function(socket) {
 		game.start = true;
 		game.game_over = false;
 		game.winner = "";
+		game.current_turn = "";
 		game.discard_pile = [];
 		direction = 1;
 		io.sockets.emit('message',"Game starting!")
