@@ -8,7 +8,9 @@
   </head>
   <script src="/socket.io/socket.io.js"></script>
   <body>
-	<button type="button" onclick="reboot()" id="play_button">Restart Game</button>
+	<button type="button" onclick="reboot()" id="play_button">Restart Game</button><br>
+	<textarea id="remove-player-text" name="remove-player-text" rows=1 cols=30></textarea>
+	<button type="button" onclick="removePlayer()" id="remove_player">Remove Player</button>
   </body>
   <script src="/static/game.js"></script>
 </html>
