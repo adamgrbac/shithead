@@ -95,7 +95,6 @@ io.on('connection', function(socket) {
 				io.sockets.connected[id].disconnect();
 			}
 		}
-		console.log(io.sockets);
 	})
 	// Handle game start - Init Game
 	socket.on('init',function(){
