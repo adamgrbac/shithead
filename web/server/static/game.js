@@ -137,6 +137,8 @@ socket.on('state',function(game) {
 			var valid_numbers = get_valid_numbers(game);
 			displayCards(game,active,place,valid_numbers);
 			if(game.current_turn == player_id) {
+				document.title = 'Your turn, shithead!';
+				document.getElementById('favicon').href = "static/images/favicon_not.ico";
 				document.getElementById("play_button").style.display = 'block';
 				//document.getElementById("play_button").disabled = false;
 				valid_move = validMove(game);
@@ -145,6 +147,8 @@ socket.on('state',function(game) {
 					socket.emit('play');
 				} 
 			} else if(game.current_turn == "") {
+				document.title = 'Shithead';
+				document.getElementById('favicon').href = "static/images/poop.ico";
 				if(game.players[player_id].face_up.length == 3 && !game.players[player_id].ready){
 					document.getElementById("ready_button").style.display = 'block';
 				}
@@ -154,6 +158,8 @@ socket.on('state',function(game) {
 				document.getElementById("play_button").style.display = 'none';
 				//document.getElementById("ready_button").disabled = false;				
 			} else {
+				document.title = 'Shithead';
+				document.getElementById('favicon').href = "static/images/poop.ico";
 				document.getElementById("play_button").style.display = 'none';
 				//document.getElementById("play_button").disabled = true;
 			}
