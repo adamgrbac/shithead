@@ -139,6 +139,8 @@ io.on('connection', function(socket) {
 			}
 		}
 		
+		game.cards_left = playing_deck.cards.length;
+		
 		io.sockets.emit('message',"Swap any face up cards with anything in your hand.")
 		io.sockets.emit('message',"Click ready when done.")
 	})
