@@ -34,7 +34,8 @@ game = {
 		winner: "",
 		current_turn: "",
 		players: {},
-		discard_pile:[]
+		discard_pile:[],
+		cards_left: 0
 		}
 		
 // Set first player
@@ -79,6 +80,7 @@ io.on('connection', function(socket) {
 		game.winner= "";
 		game.current_turn= "";
 		game.discard_pile=[];
+		game.cards_left=0;
 		direction = 0;
 		player_ind = 0;
 		for(const id of Object.keys(game.players)) {
@@ -107,6 +109,7 @@ io.on('connection', function(socket) {
 		game.winner = "";
 		game.current_turn = "";
 		game.discard_pile = [];
+		game.cards_left = 0;
 		direction = 1;
 		io.sockets.emit('message',"Game starting!")
 		
@@ -143,8 +146,9 @@ io.on('connection', function(socket) {
 		player_ind += direction;
 		player_ind += Object.keys(game.players).length;
 		player_ind %= Object.keys(game.players).length;
-		game.current_turn = Object.keys(game.players)[player_ind]
-		io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!")
+		game.current_turn = Object.keys(game.players)[player_ind];
+		game.cards_left = playing_deck.cards.length;
+		io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!");
 	})
 	socket.on('discard',function(idx){
 		var offset = 0;
@@ -169,6 +173,7 @@ io.on('connection', function(socket) {
 		// Draw cards from deck if required
 		while(game.players[socket.id].hand.length < 3 && playing_deck.cards.length > 0) {
             game.players[socket.id].hand.push(playing_deck.pop())
+			game.cards_left = playing_deck.cards.length;
 		}
 		
 		if(idx.valid){
