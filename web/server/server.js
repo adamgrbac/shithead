@@ -64,8 +64,10 @@ io.on('connection', function(socket) {
 	socket.on('disconnect',function() {
 		if(Object.keys(game.players).includes(socket.id)){
 			delete(game.players[socket.id])
-		} else {
+		} else if(Object.keys(waiting_queue).includes(socket.id)) {
 			delete(waiting_queue[socket.id])
+		} else {
+			console.log("Can't delete player... not found!")
 		}
 	})
 	socket.on('reboot',function() {
