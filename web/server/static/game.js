@@ -326,7 +326,7 @@ function displayCards(game,active,place,valid_numbers) {
 	for(const id of Object.keys(game.players)){
 		// Display selection
 		if(id != player_id) {
-			context.fillText(game.players[id].name,player_positions[ii][0],player_positions[ii][1]+90)
+			context.fillText(game.players[id].name+" ("+game.players[id].hand.length+")",player_positions[ii][0],player_positions[ii][1]+90)
 			for(let jj = 0; jj < 3; jj++){
 				if(game.players[id].face_up.length < jj+1) {
 					if(game.players[id].face_down.length >= jj+1) {
@@ -392,6 +392,10 @@ function displayCards(game,active,place,valid_numbers) {
 		img.src = '/static/images/red_back.png'
 		context.drawImage(img,365,147,70,106)
 	}
+	
+	// Display Remaining Deck Count
+	context.font = '10px Arial';
+	context.fillText("Deck: "+game.cards_left,320, 200)
 }
 
 function get_valid_numbers(game){
