@@ -51,9 +51,9 @@ socket.on('id', function(player) {
 });
 socket.on('message', function(data) {
 	var message = document.createElement("P");
-	message.innerText = data;
+	console.log(data)
+	message.innerHTML = data;
 	game_log.insertAdjacentElement('afterend',message);
-	//sidebar.appendChild(message);
 });
 socket.on('state',function(game) {
 	game_state = game;
@@ -187,10 +187,6 @@ function submitPlay() {
 	}
 }
 
-function reboot() {
-	socket.emit('reboot');
-}
-
 function get_active_hand(player) {
 	if(player.hand.length == 0) {
 		if(player.face_up.length ==0) {
@@ -216,12 +212,6 @@ function submitChat(){
 	var chat_text = document.getElementById('chat-body');
 	socket.emit('chat',chat_text.value);
 	chat_text.value = "";
-}
-
-function removePlayer() {
-	var remove_player = document.getElementById('remove-player-text');
-	socket.emit('removePlayer',remove_player.value);
-	remove_player.value = "";
 }
 
 function toggleSelection(){
