@@ -51,17 +51,18 @@ io.on('connection', function(socket) {
 	socket.on('new_player',function(username) {
 		if(game.start){
 			waiting_queue[socket.id] = username;
-			socket.emit('message','Welcome ' + username+ '!');
+			socket.emit('message','Welcome ' + username + '!');
 			socket.emit('message','A game is already in progress, please wait until game restarts or come back later!');
 			socket.emit('id',socket.id)
 		} else {
 			game.players[socket.id] = new shp.ShitheadPlayer(username);
-			socket.emit('message','Welcome ' + username+'!');
+			socket.emit('message','Welcome ' + username + '!');
 			socket.emit('id',socket.id)
 		}
 	})
 	// Handle disconnect
 	socket.on('disconnect',function() {
+		console.log(socket.id+" disconnected...");
 		if(Object.keys(game.players).includes(socket.id)){
 			delete(game.players[socket.id])
 		} else if(Object.keys(waiting_queue).includes(socket.id)) {
@@ -152,11 +153,12 @@ io.on('connection', function(socket) {
 		player_ind %= Object.keys(game.players).length;
 		game.current_turn = Object.keys(game.players)[player_ind];
 		game.cards_left = playing_deck.cards.length;
-		io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!");
+		io.sockets.emit('message',"&#128308; <span style='color:tomato'><b>"+game.players[game.current_turn].name+"'s turn!</b></span>");
 	})
 	socket.on('discard',function(idx){
 		var offset = 0;
 		var card_string = "";
+		var card_emoji = "";
 		// Remove cards from hand
 		for(i = 0; i < idx.selection.length ; i++) {
 			if(idx.place == "fd") {
@@ -169,7 +171,25 @@ io.on('connection', function(socket) {
 				throw "Probs shouldn't be here..."
 			}
 			offset += 1
-			card_string += '['+idx.selected_cards[i].number+idx.selected_cards[i].suit+']';
+			switch(idx.selected_cards[i].suit) {
+				case "H":
+					card_emoji = "<span style='color:tomato'>&#9829;</span>";
+					break;
+				case "C":
+					card_emoji = "&#9827;";
+					break;
+				case "D":
+					card_emoji = "<span style='color:tomato'>&#9830;</span>";
+					break;
+				case "S":
+					card_emoji = "&#9824;";
+					break;
+				default:
+					var card_emoji = idx.selected_cards[i].suit;
+					break;
+					
+			}
+			card_string += '['+idx.selected_cards[i].number+card_emoji+']';
 		}
 		// Display discarded cards
 		io.sockets.emit('message',game.players[game.current_turn].name+" played " + card_string);
@@ -183,7 +203,7 @@ io.on('connection', function(socket) {
 		if(idx.valid){
 			// Check for win condition
 			if(game.players[socket.id].hand.length == 0 && game.players[socket.id].face_up.length == 0 && game.players[socket.id].face_down == 0){
-			io.sockets.emit('message', "We have a winner! " + game.players[socket.id].name);
+			io.sockets.emit('message', "&#127881;&#127870;We have a winner! &#129351;<span style='color:tomato'><b>" + game.players[socket.id].name + "</b></span>");
 			game.game_over = true;
 			game.winner = socket.id;
 			}
@@ -196,7 +216,7 @@ io.on('connection', function(socket) {
 				}
 				if(Object.keys(game.players).length == 2){
 					player_ind -= direction;
-					socket.emit('message','Skip! Your turn again!');
+					socket.emit('message',"&#128308; <span style='color:tomato'><b>Skip! Your turn again!</b></span>");
 				}
 			}
 			
@@ -227,18 +247,18 @@ io.on('connection', function(socket) {
 			// Clear discard pile if 10 is player or 4 of a kind played
 			if((game.discard_pile[game.discard_pile.length-1].number == "10") || ((game.discard_pile.length > 3) && (game.discard_pile.slice(-4,game.discard_pile.length).every(function(x){return x.number == game.discard_pile[game.discard_pile.length-1].number})))) {
 				game.discard_pile = [];
-				io.sockets.emit('message',"Discard pile cleared! "+game.players[game.current_turn].name+"'s turn again!")
+				io.sockets.emit('message',"&#128308; Discard pile cleared! <span style='color:tomato'><b>"+game.players[game.current_turn].name+"'s turn again!</b></span>")
 			} else {
 				player_ind += direction;
 				player_ind += Object.keys(game.players).length;
 				player_ind %= Object.keys(game.players).length;
 				game.current_turn = Object.keys(game.players)[player_ind];
-				io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!")
+				io.sockets.emit('message',"&#128308; <span style='color:tomato'><b>"+game.players[game.current_turn].name+"'s turn!</b></span>")
 			}
 		}
 	})
 	socket.on('pickup',function(){
-		io.sockets.emit('message',game.players[game.current_turn].name + " can't play a card and has to pick up the pile! Shithead!")
+		io.sockets.emit('message',game.players[game.current_turn].name + " can't play a card and has to pick up the pile! Shithead! &#128169;")
 		for(const card of game.discard_pile){
 			game.players[socket.id].hand.push(card);
 		}
@@ -280,14 +300,14 @@ io.on('connection', function(socket) {
 			// Commence!
 			io.sockets.emit('message',"Everyone is ready! Starting the game!")
 			game.current_turn = Object.keys(game.players)[player_ind]
-			io.sockets.emit('message',game.players[game.current_turn].name+"'s turn!")
+			io.sockets.emit('message',"&#128308; <span style='color:tomato'><b>"+game.players[game.current_turn].name+"'s turn!</b></span>")
 			for(const id of Object.keys(game.players)) {
 				game.players[id].hand.sort(sortFunction.sortFunction);
 			}
 		}
 	})
 	socket.on('chat',function(chat_text){
-		io.sockets.emit('message',game.players[socket.id].name+": "+chat_text)
+		io.sockets.emit('message',"<b>"+game.players[socket.id].name+"</b>: "+chat_text)
 	});
 });
 

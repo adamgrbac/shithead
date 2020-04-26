@@ -7,10 +7,20 @@
 	<link rel="icon" href="/static/images/poop.ico" />
   </head>
   <script src="/socket.io/socket.io.js"></script>
+  <script>
+	var socket = io();
+	function removePlayer() {
+		var remove_player = document.getElementById('remove-player-text');
+		socket.emit('removePlayer',remove_player.value);
+		remove_player.value = "";
+	}
+	function reboot() {
+		socket.emit('reboot');
+	}
+  </script>
   <body>
 	<button type="button" onclick="reboot()" id="play_button">Restart Game</button><br>
 	<textarea id="remove-player-text" name="remove-player-text" rows=1 cols=30></textarea>
 	<button type="button" onclick="removePlayer()" id="remove_player">Remove Player</button>
   </body>
-  <script src="/static/game.js"></script>
 </html>
