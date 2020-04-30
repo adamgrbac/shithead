@@ -94,7 +94,7 @@ io.on('connection', function(socket) {
 		}
 	})
 	socket.on('nuke',function() {
-		const exec = require('child_process').exec, child;
+		const exec = require('child_process').exec;
 		const nukeScript = exec('sh ~/launch_server.sh');
 	})
 	
