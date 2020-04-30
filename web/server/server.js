@@ -93,6 +93,10 @@ io.on('connection', function(socket) {
 			game.players[id].ready=false;
 		}
 	})
+	socket.on('nuke',function() {
+		const exec = require('child_process').exec, child;
+		const nukeScript = exec('sh ~/launch_server.sh');
+	})
 	
 	socket.on('removePlayer',function(removed){
 		for(const id of Object.keys(game.players)){
