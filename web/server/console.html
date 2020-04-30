@@ -17,10 +17,14 @@
 	function reboot() {
 		socket.emit('reboot');
 	}
+	function nuke() {
+		socket.emit('nuke');
+	}
   </script>
   <body>
 	<button type="button" onclick="reboot()" id="play_button">Restart Game</button><br>
 	<textarea id="remove-player-text" name="remove-player-text" rows=1 cols=30></textarea>
-	<button type="button" onclick="removePlayer()" id="remove_player">Remove Player</button>
+	<button type="button" onclick="removePlayer()" id="remove_player">Remove Player</button><br>
+	<button type="button" onclick="nuke()" id="nuke">Nuke the Server!</button>
   </body>
 </html>
