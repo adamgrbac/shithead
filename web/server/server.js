@@ -269,6 +269,9 @@ io.on('connection', function(socket) {
 		game.discard_pile = [];
 		game.players[socket.id].hand.sort(sortFunction.sortFunction);
 	})
+	socket.on('newName',function(newName){
+		game.players[socket.id].name = newName;
+	})
 	socket.on('swapout',function(selection){
 		faceups = [];
 		hands = [];
