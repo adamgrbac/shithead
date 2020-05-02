@@ -224,6 +224,16 @@ function toggleSelection(){
 	selection.sort(function(a,b){return a.index - b.index})
 }
 
+function changeName() {
+	var tmpName = prompt("What is your new name?");
+	if(tmpName == "" || tmpName == null){
+		username = username;
+	} else {
+		username = tmpName;
+		socket.emit('newName',username);
+	}
+}
+
 function displayCards(game,active,place,valid_numbers) {
 	context.font = '10px Arial';
 	while (fd_space.lastElementChild) {
@@ -275,6 +285,7 @@ function displayCards(game,active,place,valid_numbers) {
 	}
 	ii=0;
 	// Display hand
+	
 	for(const card of game.players[player_id].hand){
 		var div = document.createElement('div')
 		div.innerHTML = '<img src="'+getImage(card.number,card.suit)+'"height=80 width=53>'
