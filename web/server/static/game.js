@@ -224,8 +224,8 @@ function toggleSelection(){
 	selection.sort(function(a,b){return a.index - b.index})
 }
 
-function changeName() {
-	var tmpName = prompt("What is your new name?");
+async function changeName() {
+	var tmpName = await prompt("What is your new name?");
 	if(tmpName == "" || tmpName == null){
 		username = username;
 	} else {
